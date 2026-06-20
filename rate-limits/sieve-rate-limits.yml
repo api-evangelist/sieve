@@ -1,0 +1,59 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Sieve
+providerId: sieve
+created: '2026-06-20'
+modified: '2026-06-20'
+reconciled: false
+tags:
+- AI
+- Video
+- Audio
+- Media Processing
+- Async Jobs
+- Rate Limiting
+- Quotas
+- Throttling
+description: >-
+  Sieve throttles primarily by concurrency rather than per-minute request
+  counts. Jobs are submitted asynchronously to the Push endpoint and queued;
+  the number of jobs that run in parallel is bounded by the account's concurrent
+  request limit (up to 3 on the Starter plan, custom on Production). Excess jobs
+  queue rather than fail. Specific HTTP rate limits on the management endpoints
+  are not separately reconciled in this artifact.
+notes: >-
+  Verify concurrency limits and any per-endpoint request limits in the Sieve
+  dashboard and documentation on reconciliation; limits raise from Starter to
+  Production via agreement.
+sources:
+- https://www.sievedata.com/pricing
+- https://docs.sievedata.com
+responseCodes:
+  throttled: 429
+limits:
+- name: Concurrent Requests (Starter)
+  scope: account
+  metric: concurrent_requests
+  limit: 3
+  notes: Up to 3 jobs run in parallel on the Starter plan; additional jobs queue.
+- name: Concurrent Requests (Production)
+  scope: account
+  metric: concurrent_requests
+  limit: custom
+  notes: Custom concurrency negotiated on the Production plan.
+- name: Job Queue
+  scope: account
+  metric: jobs
+  limit: queued
+  notes: Jobs submitted above the concurrency limit are queued and processed as capacity frees up, rather than being rejected.
+policies:
+- name: Concurrency-Based Throttling
+  description: Throughput is governed by concurrent request limits per plan; raise concurrency by upgrading to Production.
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter on 429 responses and honor Retry-After.
+- name: Asynchronous Submission
+  description: Push jobs and poll Get Job or use webhooks rather than blocking on synchronous responses.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

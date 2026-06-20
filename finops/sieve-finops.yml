@@ -1,0 +1,97 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: Sieve
+providerId: sieve
+created: '2026-06-20'
+modified: '2026-06-20'
+reconciled: true
+tags:
+- AI
+- Video
+- Audio
+- Media Processing
+- Async Jobs
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of Sieve spend. Sieve bills usage-based: prebuilt solution apps
+  are metered per minute or per hour of media processed (e.g. dubbing per
+  minute, transcription per hour), while other public apps and custom functions
+  are metered per second of compute on the underlying GPU/CPU hardware. Spend is
+  driven by media duration, the app/function chosen, and the hardware tier the
+  function runs on.
+notes: >-
+  Per-app and per-hardware rates are subject to change; verify against the Sieve
+  pricing page during reconciliation.
+sources:
+- https://www.sievedata.com/pricing
+- https://docs.sievedata.com
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Sieve
+serviceCategory: AI and Machine Learning
+billingModel:
+  pricingCategory: Usage-Based
+  billingFrequency: Monthly
+  billingCurrency: USD
+  chargeCategories:
+  - Usage
+  - Purchase
+  - Adjustment
+focusColumns:
+  ServiceName: Sieve
+  ServiceCategory: AI and Machine Learning
+  ProviderName: Sieve
+  PublisherName: Sieve
+  InvoiceIssuerName: Sieve
+  BillingCurrency: USD
+  ChargeCategory: Usage
+  PricingCategory: Usage-Based
+meters:
+- name: media_minutes_processed
+  description: Minutes of media processed by per-minute solution apps (e.g. dubbing, lipsync, background removal, SAM 2), billed per minute.
+  unit: minutes
+  aggregation: sum
+  dimensions:
+  - account
+  - function
+- name: media_hours_processed
+  description: Hours of media processed by per-hour solution apps (e.g. transcription, audio enhance, autocrop, active speaker detection), billed per hour.
+  unit: hours
+  aggregation: sum
+  dimensions:
+  - account
+  - function
+- name: compute_seconds
+  description: Seconds of compute used by public apps and custom functions, priced per second by the GPU/CPU hardware tier the function runs on.
+  unit: seconds
+  aggregation: sum
+  dimensions:
+  - account
+  - function
+  - hardware
+- name: free_credit
+  description: $20 of free credit applied against usage on the Starter plan.
+  unit: credit
+  aggregation: sum
+  dimensions:
+  - account
+principles:
+- name: Visibility
+  description: Inspect per-job and per-function spend in the Sieve dashboard; map media minutes/hours and compute seconds to workloads.
+- name: Allocation
+  description: Tag jobs per workload/team and map functions and hardware tiers to internal cost centers.
+- name: Optimization
+  description: Choose cheaper hardware tiers (T4/L4/CPU over A100) for custom functions; pick the lower-cost voice/model variant of a solution app; trim input media duration; cache or reuse outputs.
+- name: Accountability
+  description: Assign owners per project/key; review per-function spend monthly against budget and use Production usage discounts at scale.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

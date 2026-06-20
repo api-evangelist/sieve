@@ -1,0 +1,399 @@
+openapi: 3.0.1
+info:
+  title: Sieve API
+  description: >-
+    REST API for the Sieve AI media-processing platform. Sieve exposes prebuilt
+    public functions and apps (transcription, dubbing, lip-sync, segmentation,
+    object tracking, background removal, and more) as well as custom user
+    functions, all invoked asynchronously as jobs. Submit a job with the Push
+    endpoint, then poll the Jobs endpoints for status and outputs or receive
+    results via webhooks.
+  termsOfService: https://www.sievedata.com/terms
+  contact:
+    name: Sieve Support
+    url: https://docs.sievedata.com
+  version: 'v2'
+servers:
+  - url: https://mango.sievedata.com/v2
+    description: Sieve API v2
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Jobs
+    description: Push, retrieve, list, and cancel asynchronous function jobs.
+  - name: Functions
+    description: Look up metadata for public and custom functions.
+paths:
+  /push:
+    post:
+      operationId: pushJob
+      tags:
+        - Jobs
+      summary: Push New Job
+      description: >-
+        Creates a new job by running a function. Specify the function with
+        `function` (author/name[:version]) or `id` - one or the other, not both -
+        and pass the function's parameters in `inputs`. Optionally register
+        `webhooks` to be notified on job events.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushRequest'
+            example:
+              function: sieve/dubbing
+              inputs:
+                file:
+                  url: https://storage.googleapis.com/sieve-public-data/assets/dub.m4a
+                target_language: spanish
+              webhooks:
+                - type: job.complete
+                  url: https://example.com/sieve-webhook
+      responses:
+        '200':
+          description: The job was accepted and queued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushResponse'
+        '401':
+          description: Missing or invalid API key.
+        '422':
+          description: Validation error in the request body.
+  /jobs:
+    get:
+      operationId: listJobs
+      tags:
+        - Jobs
+      summary: List Jobs
+      description: List all jobs in your organization, optionally filtered by status.
+      parameters:
+        - name: limit
+          in: query
+          description: The maximum number of jobs to show.
+          required: false
+          schema:
+            type: integer
+            default: 500
+        - name: offset
+          in: query
+          description: Exclude the first N jobs.
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: status
+          in: query
+          description: >-
+            Filter by status. One of queued, processing, error, finished,
+            cancelled. Leave empty to get all statuses.
+          required: false
+          schema:
+            type: string
+            default: ''
+      responses:
+        '200':
+          description: A page of jobs.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  next_offset:
+                    type: integer
+                    default: -1
+        '401':
+          description: Missing or invalid API key.
+        '422':
+          description: Validation error.
+  /jobs/{job_id}:
+    get:
+      operationId: getJob
+      tags:
+        - Jobs
+      summary: Get Job
+      description: Get information about a specific job by id, including status and outputs.
+      parameters:
+        - name: job_id
+          in: path
+          description: The ID of the job.
+          required: true
+          schema:
+            type: string
+          example: 43d7add5-61cf-44ad-aac8-c5d14c642bb4
+        - name: offset
+          in: query
+          description: Exclude the first N outputs.
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: The job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '400':
+          description: Bad request.
+        '401':
+          description: Missing or invalid API key.
+        '404':
+          description: Job not found.
+        '422':
+          description: Validation error.
+    delete:
+      operationId: cancelJob
+      tags:
+        - Jobs
+      summary: Cancel Job
+      description: Cancels a running job.
+      parameters:
+        - name: job_id
+          in: path
+          description: The ID of the job.
+          required: true
+          schema:
+            type: string
+          example: 43d7add5-61cf-44ad-aac8-c5d14c642bb4
+      responses:
+        '200':
+          description: The job was cancelled.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Description of the event.
+        '400':
+          description: Bad request.
+        '401':
+          description: Missing or invalid API key.
+        '404':
+          description: Job not found.
+        '422':
+          description: Validation error.
+  /functions/{owner_name}/{function_name}:
+    get:
+      operationId: getFunction
+      tags:
+        - Functions
+      summary: Get Function
+      description: Get information about the given function, including its latest version.
+      parameters:
+        - name: owner_name
+          in: path
+          description: The owner of the function.
+          required: true
+          schema:
+            type: string
+          example: sieve
+        - name: function_name
+          in: path
+          description: The name of the function.
+          required: true
+          schema:
+            type: string
+          example: dubbing
+      responses:
+        '200':
+          description: The function metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Function'
+        '401':
+          description: Missing or invalid API key.
+        '404':
+          description: Function not found.
+        '422':
+          description: Validation error.
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: The Sieve API key to authenticate with.
+  schemas:
+    PushRequest:
+      type: object
+      required:
+        - inputs
+      properties:
+        function:
+          type: string
+          nullable: true
+          description: >-
+            The name of the function, in the format author/name[:version].
+            Either function or id may be specified, but not both.
+        id:
+          type: string
+          nullable: true
+          description: The ID of the function to be called.
+        inputs:
+          type: object
+          description: The inputs to the job. Fields vary by function.
+          additionalProperties: true
+        webhooks:
+          type: array
+          nullable: true
+          description: Webhooks to notify on job events.
+          items:
+            $ref: '#/components/schemas/Webhook'
+        env:
+          type: object
+          nullable: true
+          description: Environment variables for the given job.
+          additionalProperties: true
+    Webhook:
+      type: object
+      required:
+        - type
+        - url
+      properties:
+        type:
+          type: string
+          description: The webhook event type.
+          enum:
+            - job.start
+            - job.complete
+            - job.complete.no_output
+            - job.new_output
+        url:
+          type: string
+          description: The URL Sieve will POST the notification to.
+    PushResponse:
+      type: object
+      required:
+        - id
+        - run_id
+        - stream_output
+        - status
+        - organization_id
+        - model_id
+        - workflow_id
+      properties:
+        id:
+          type: string
+          description: The ID of the job.
+        run_id:
+          type: string
+          description: Internal metadata.
+        stream_output:
+          type: boolean
+          description: Whether the output will be streamed.
+        status:
+          type: string
+          description: The status of the job.
+          enum:
+            - queued
+            - processing
+            - error
+            - finished
+            - cancelled
+        organization_id:
+          type: string
+          description: The ID of the organization.
+        model_id:
+          type: string
+          description: The ID of the model.
+        workflow_id:
+          type: string
+          nullable: true
+          description: The ID of the workflow.
+    Job:
+      type: object
+      required:
+        - id
+        - function_id
+        - organization_id
+        - status
+      properties:
+        id:
+          type: string
+          description: The id of the job.
+        function_id:
+          type: string
+          description: The id of the function that the job belongs to.
+        organization_id:
+          type: string
+          description: The ID of the organization that submitted the function.
+        function:
+          type: object
+          nullable: true
+          description: The function that the job belongs to.
+          additionalProperties: true
+        status:
+          type: string
+          description: The status of the job.
+          enum:
+            - queued
+            - processing
+            - error
+            - finished
+            - cancelled
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: The UTC time the job was created.
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: The UTC time the job started processing.
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: The UTC time the job was completed.
+        error:
+          type: string
+          nullable: true
+          description: The error the job ran into. Empty string if there is no error.
+        visibility:
+          type: string
+          description: '"public" or "private".'
+        run_id:
+          type: string
+          nullable: true
+          description: The run_id of the job.
+        inputs:
+          type: object
+          description: The inputs the job was submitted with.
+          additionalProperties: true
+        outputs:
+          type: array
+          description: The outputs produced by the job.
+          items:
+            type: object
+            additionalProperties: true
+    Function:
+      type: object
+      required:
+        - name
+        - owner_name
+      properties:
+        name:
+          type: string
+          description: The name of the function.
+        owner_name:
+          type: string
+          description: The owner of the function.
+        latest_version:
+          type: object
+          description: The latest version of the function and its configuration.
+          additionalProperties: true

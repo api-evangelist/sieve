@@ -1,0 +1,224 @@
+{
+  "info": {
+    "name": "Sieve API",
+    "description": {
+      "content": "REST API for the Sieve AI media-processing platform. Run prebuilt or custom functions asynchronously as jobs, retrieve status and outputs, and look up function metadata.",
+      "type": "text/plain"
+    },
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Jobs",
+      "description": {
+        "content": "Push, retrieve, list, and cancel asynchronous function jobs.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "name": "Push New Job",
+          "request": {
+            "name": "Push New Job",
+            "description": {
+              "content": "Creates a new job by running a function. Specify function (author/name[:version]) or id, and pass parameters in inputs. Optionally register webhooks.",
+              "type": "text/plain"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/push",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "push"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"function\": \"sieve/dubbing\",\n  \"inputs\": {\n    \"file\": {\n      \"url\": \"https://storage.googleapis.com/sieve-public-data/assets/dub.m4a\"\n    },\n    \"target_language\": \"spanish\"\n  },\n  \"webhooks\": [\n    {\n      \"type\": \"job.complete\",\n      \"url\": \"https://example.com/sieve-webhook\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "List Jobs",
+          "request": {
+            "name": "List Jobs",
+            "description": {
+              "content": "List all jobs in your organization, optionally filtered by status.",
+              "type": "text/plain"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs?limit=500&offset=0&status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "500"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "method": "GET"
+          }
+        },
+        {
+          "name": "Get Job",
+          "request": {
+            "name": "Get Job",
+            "description": {
+              "content": "Get information about a specific job by id, including status and outputs.",
+              "type": "text/plain"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{job_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{job_id}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "job_id",
+                  "value": "43d7add5-61cf-44ad-aac8-c5d14c642bb4"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "method": "GET"
+          }
+        },
+        {
+          "name": "Cancel Job",
+          "request": {
+            "name": "Cancel Job",
+            "description": {
+              "content": "Cancels a running job.",
+              "type": "text/plain"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{job_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "jobs",
+                "{{job_id}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "job_id",
+                  "value": "43d7add5-61cf-44ad-aac8-c5d14c642bb4"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "method": "DELETE"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Functions",
+      "description": {
+        "content": "Look up metadata for public and custom functions.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "name": "Get Function",
+          "request": {
+            "name": "Get Function",
+            "description": {
+              "content": "Get information about the given function, including its latest version.",
+              "type": "text/plain"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/functions/{{owner_name}}/{{function_name}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "functions",
+                "{{owner_name}}",
+                "{{function_name}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "owner_name",
+                  "value": "sieve"
+                },
+                {
+                  "key": "function_name",
+                  "value": "dubbing"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "method": "GET"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://mango.sievedata.com/v2"
+    },
+    {
+      "key": "apiKey",
+      "value": ""
+    }
+  ]
+}

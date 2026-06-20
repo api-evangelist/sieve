@@ -1,0 +1,264 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Sieve
+providerId: sieve
+created: '2026-06-20'
+modified: '2026-06-20'
+reconciled: true
+tags:
+- AI
+- Video
+- Audio
+- Media Processing
+- Async Jobs
+- Plans
+description: >-
+  Sieve uses a usage-based, pay-as-you-go pricing model. The Starter plan is
+  $0/month plus usage with $20 of free credit and up to 3 concurrent requests;
+  the Production plan is custom-priced with usage discounts, custom concurrency,
+  and 24x7 support. Prebuilt solution apps are billed per minute or per hour of
+  media processed; other public apps and custom functions are billed per second
+  of compute used, priced by the GPU/CPU hardware the function runs on.
+notes: >-
+  Representative app and compute rates as published on the Sieve pricing page;
+  per-app prices vary by selected voice, model, and translation engine. Check
+  the pricing page for the current full catalog and rates.
+sources:
+- https://www.sievedata.com/pricing
+- https://docs.sievedata.com
+plans:
+- id: sieve-starter
+  name: Starter
+  type: usage
+  description: >-
+    For developers looking to build projects. $0/month plus usage, with $20 of
+    free credit, public apps, custom function deployment, up to 3 concurrent
+    requests, and standard support.
+  entries:
+  - label: Free Credit
+    name: free_credit
+    type: trial
+    metric: credit
+    limit: 20
+    timeFrame: lifetime
+    geo: global
+    unit: 1
+    price: $20 free credit
+    userMultiplied: false
+  - label: Concurrent Requests
+    name: concurrency
+    type: limit
+    metric: concurrent_requests
+    limit: 3
+    timeFrame: instant
+    geo: global
+    unit: 1
+    price: included
+    userMultiplied: false
+  elements:
+  - name: Public Apps
+  - name: Custom Function Deployment
+  - name: Standard Support
+- id: sieve-usage
+  name: Usage
+  type: usage
+  description: >-
+    Pay-as-you-go usage across Sieve solution apps, optimized models, and
+    custom functions. Solution apps are billed per minute or per hour of media
+    processed; other public apps and custom functions are billed per second of
+    compute on the underlying hardware.
+  entries:
+  - label: Dubbing (ElevenLabs voice)
+    name: dubbing_elevenlabs
+    type: usage
+    metric: minutes
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.535 per minute processed
+    userMultiplied: false
+  - label: Dubbing (OpenAI voice)
+    name: dubbing_openai
+    type: usage
+    metric: minutes
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.402 per minute processed
+    userMultiplied: false
+  - label: Lipsync
+    name: lipsync
+    type: usage
+    metric: minutes
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.60 per minute generated
+    userMultiplied: false
+  - label: Background Removal (Vanish)
+    name: background_removal_vanish
+    type: usage
+    metric: minutes
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $2.00 per minute processed
+    userMultiplied: false
+  - label: Background Removal (Parallax)
+    name: background_removal_parallax
+    type: usage
+    metric: minutes
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.95 per minute processed
+    userMultiplied: false
+  - label: Speech Transcription
+    name: transcribe
+    type: usage
+    metric: hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.15 per hour processed
+    userMultiplied: false
+  - label: Audio Enhance
+    name: audio_enhance
+    type: usage
+    metric: hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $1.50 per hour processed
+    userMultiplied: false
+  - label: Autocrop
+    name: autocrop
+    type: usage
+    metric: hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $6.63 per hour processed
+    userMultiplied: false
+  - label: Active Speaker Detection
+    name: active_speaker_detection
+    type: usage
+    metric: hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $3.90 per hour processed
+    userMultiplied: false
+  - label: SAM 2 Large
+    name: sam2_large
+    type: usage
+    metric: minutes
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.2448 per minute processed
+    userMultiplied: false
+  - label: SAM 2 Tiny
+    name: sam2_tiny
+    type: usage
+    metric: minutes
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.1728 per minute processed
+    userMultiplied: false
+  - label: Compute - A100 40GB
+    name: compute_a100_40gb
+    type: usage
+    metric: compute_hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $4.20 per hour (billed per second)
+    userMultiplied: false
+  - label: Compute - A100 20GB
+    name: compute_a100_20gb
+    type: usage
+    metric: compute_hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $2.80 per hour (billed per second)
+    userMultiplied: false
+  - label: Compute - L4 24GB
+    name: compute_l4_24gb
+    type: usage
+    metric: compute_hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $1.25 per hour (billed per second)
+    userMultiplied: false
+  - label: Compute - T4 16GB
+    name: compute_t4_16gb
+    type: usage
+    metric: compute_hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.81 per hour (billed per second)
+    userMultiplied: false
+  - label: Compute - CPU
+    name: compute_cpu
+    type: usage
+    metric: compute_hours
+    limit: -1
+    timeFrame: usage
+    geo: global
+    unit: 1
+    price: $0.40 per hour (billed per second)
+    userMultiplied: false
+  elements:
+  - name: Solution Apps
+  - name: Optimized Models
+  - name: Public Apps
+  - name: Custom Functions
+- id: sieve-production
+  name: Production
+  type: enterprise
+  description: >-
+    For teams shipping production applications. Custom pricing with usage
+    discounts, custom concurrency, unlimited organization seats, 24x7 customer
+    support, a dedicated Slack channel, and custom integration support. Contact
+    Sieve sales.
+  entries:
+  - label: Production Agreement
+    name: production
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: Usage Discounts
+  - name: Custom Concurrency
+  - name: Unlimited Organization Seats
+  - name: 24x7 Customer Support
+  - name: Dedicated Slack Channel
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

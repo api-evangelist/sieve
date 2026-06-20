@@ -1,0 +1,89 @@
+aid: sieve
+name: Sieve
+review:
+  question: Does Sieve expose a documented public WebSocket API?
+  answer: false
+  date: '2026-06-20'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    Sieve's asynchronous model is job-based with HTTP webhook callbacks, not a
+    streaming transport. No AsyncAPI document was authored because Sieve does
+    not publish a WebSocket or SSE streaming surface. The async behavior is fully
+    captured by the REST job model: push a job, then poll Get Job or receive
+    delivered webhook POSTs. Webhooks are outbound HTTP callbacks (provider-to-
+    consumer), modeled here narratively rather than as an AsyncAPI channel.
+findings:
+  summary: |
+    Sieve does not publish a documented public WebSocket API. The platform is a
+    REST API under https://mango.sievedata.com/v2 authenticated with an
+    X-API-Key header. Work is performed asynchronously: a client POSTs a job to
+    /push naming a function and inputs, receives a job id, and then either polls
+    GET /jobs/{job_id} for status and outputs or registers webhooks so Sieve
+    POSTs notifications when the job starts, produces a new output, or completes.
+    Webhooks are one-way outbound HTTP POSTs retried up to ten times with
+    exponential backoff until a 200 is received - they are not a bidirectional
+    WebSocket. No ws:// or wss:// endpoint is documented.
+  asyncModel:
+    pattern: Asynchronous job submission with polling and webhooks
+    submit: POST https://mango.sievedata.com/v2/push
+    poll: GET https://mango.sievedata.com/v2/jobs/{job_id}
+    statuses:
+      - queued
+      - processing
+      - error
+      - finished
+      - cancelled
+    webhookDelivery: HTTP POST callbacks, retried up to 10 times with exponential backoff until a 200 is returned
+    webhookEventTypes:
+      - job.start
+      - job.complete
+      - job.complete.no_output
+      - job.new_output
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://mango.sievedata.com/v2
+      documented: true
+    - protocol: Webhook
+      scheme: https
+      note: Outbound HTTP POST callbacks to a consumer-supplied URL on job events. One-way provider-to-consumer; not WebSocket.
+      documented: true
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented in Sieve's API reference or guides as of the review date.
+  endpointsConfirmedRest:
+    - POST   https://mango.sievedata.com/v2/push
+    - GET    https://mango.sievedata.com/v2/jobs
+    - GET    https://mango.sievedata.com/v2/jobs/{job_id}
+    - DELETE https://mango.sievedata.com/v2/jobs/{job_id}
+    - GET    https://mango.sievedata.com/v2/functions/{owner_name}/{function_name}
+sources:
+  - url: https://docs.sievedata.com/guide/integration/integrate-apis
+    type: Documentation
+    note: Shows POST /v2/push with X-API-Key auth as the single entry point for running functions; results retrieved by job id.
+  - url: https://docs.sievedata.com/reference-v2/api/get-job
+    type: APIReference
+    note: GET /v2/jobs/{job_id} returns status, outputs, and error. All HTTPS REST.
+  - url: https://docs.sievedata.com/reference-v2/api/list-jobs
+    type: APIReference
+    note: GET /v2/jobs lists organization jobs with limit/offset/status query params.
+  - url: https://docs.sievedata.com/reference-v2/api/cancel-job
+    type: APIReference
+    note: DELETE /v2/jobs/{job_id} cancels a running job.
+  - url: https://docs.sievedata.com/guide/integration/webhooks
+    type: Documentation
+    note: Webhooks delivered as HTTP POST, retried up to ten times with exponential backoff. Event types job.start, job.complete, job.complete.no_output, job.new_output. Not WebSocket.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket protocol surface exists and Sieve exposes no SSE stream. The
+    asynchronous behavior is a REST job model with outbound HTTP webhook
+    callbacks, which is documented narratively in this review and modeled in the
+    OpenAPI definition (the webhooks array on POST /push). No AsyncAPI document
+    was created because there is no streaming channel to describe.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

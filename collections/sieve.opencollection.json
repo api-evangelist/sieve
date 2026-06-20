@@ -1,0 +1,92 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Sieve API",
+    "version": "v2"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-API-Key",
+      "value": "{{apiKey}}",
+      "in": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Jobs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Push New Job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://mango.sievedata.com/v2/push",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"function\": \"sieve/dubbing\",\n  \"inputs\": {\n    \"file\": { \"url\": \"https://storage.googleapis.com/sieve-public-data/assets/dub.m4a\" },\n    \"target_language\": \"spanish\"\n  },\n  \"webhooks\": [\n    { \"type\": \"job.complete\", \"url\": \"https://example.com/sieve-webhook\" }\n  ]\n}"
+            }
+          },
+          "docs": "Creates a new job by running a function. Specify function (author/name[:version]) or id, and pass parameters in inputs. Optionally register webhooks."
+        },
+        {
+          "info": {
+            "name": "List Jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://mango.sievedata.com/v2/jobs"
+          },
+          "docs": "List all jobs in your organization, optionally filtered by status (limit, offset, status query params)."
+        },
+        {
+          "info": {
+            "name": "Get Job",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://mango.sievedata.com/v2/jobs/{job_id}"
+          },
+          "docs": "Get information about a specific job by id, including status and outputs."
+        },
+        {
+          "info": {
+            "name": "Cancel Job",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://mango.sievedata.com/v2/jobs/{job_id}"
+          },
+          "docs": "Cancels a running job."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Functions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Function",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://mango.sievedata.com/v2/functions/{owner_name}/{function_name}"
+          },
+          "docs": "Get information about the given function, including its latest version."
+        }
+      ]
+    }
+  ]
+}

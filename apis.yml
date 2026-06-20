@@ -1,0 +1,129 @@
+aid: sieve
+url: https://raw.githubusercontent.com/api-evangelist/sieve/refs/heads/main/apis.yml
+name: Sieve
+kind: company
+description: Sieve is an AI media-processing platform that exposes prebuilt functions
+  and apps for video, audio, and image understanding - transcription, dubbing, lip-sync,
+  object tracking and segmentation, background removal, and more. Functions are run
+  asynchronously as jobs via a single REST push endpoint, with results retrieved by
+  polling or delivered via webhooks.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- AI
+- Video
+- Audio
+- Media Processing
+- Async Jobs
+created: '2026-06-20'
+modified: '2026-06-20'
+specificationVersion: '0.19'
+apis:
+- aid: sieve:sieve-jobs-push-api
+  name: Sieve Jobs Push API
+  tags:
+  - Jobs
+  - Push
+  - Async
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.sievedata.com/guide/integration/integrate-apis
+  baseURL: https://mango.sievedata.com/v2
+  properties:
+  - url: https://docs.sievedata.com/guide/integration/integrate-apis
+    type: Documentation
+  - url: https://docs.sievedata.com/reference-v2/api/push-new-job
+    type: APIReference
+  - url: openapi/sieve-openapi.yml
+    type: OpenAPI
+  - url: collections/sieve.postman_collection.json
+    type: PostmanCollection
+  - url: collections/sieve.opencollection.json
+    type: OpenCollection
+  description: Submit a function or app to run as an asynchronous job via POST /push,
+    passing the function name (author/name[:version]) and an inputs object. Returns
+    a job id used to track status and retrieve outputs.
+- aid: sieve:sieve-jobs-status-api
+  name: Sieve Jobs Status API
+  tags:
+  - Jobs
+  - Status
+  - Outputs
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.sievedata.com/reference-v2/api/get-job
+  baseURL: https://mango.sievedata.com/v2
+  properties:
+  - url: https://docs.sievedata.com/reference-v2/api/get-job
+    type: Documentation
+  - url: https://docs.sievedata.com/reference-v2/api/list-jobs
+    type: APIReference
+  - url: openapi/sieve-openapi.yml
+    type: OpenAPI
+  - url: collections/sieve.postman_collection.json
+    type: PostmanCollection
+  - url: collections/sieve.opencollection.json
+    type: OpenCollection
+  description: Retrieve a single job by id (GET /jobs/{job_id}) with its status, outputs,
+    and error, list all organization jobs (GET /jobs) filtered by status, and cancel
+    a running job (DELETE /jobs/{job_id}).
+- aid: sieve:sieve-functions-api
+  name: Sieve Functions API
+  tags:
+  - Functions
+  - Catalog
+  - Apps
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.sievedata.com/reference-v2/api/get-function
+  baseURL: https://mango.sievedata.com/v2
+  properties:
+  - url: https://docs.sievedata.com/reference-v2/api/get-function
+    type: Documentation
+  - url: https://docs.sievedata.com/reference-v2/api/get-function
+    type: APIReference
+  - url: openapi/sieve-openapi.yml
+    type: OpenAPI
+  - url: collections/sieve.postman_collection.json
+    type: PostmanCollection
+  - url: collections/sieve.opencollection.json
+    type: OpenCollection
+  description: Look up metadata for a public or custom function by owner and name
+    (GET /functions/{owner_name}/{function_name}), including the latest version, its
+    inputs, outputs, and runtime configuration.
+- aid: sieve:sieve-webhooks-api
+  name: Sieve Webhooks API
+  tags:
+  - Webhooks
+  - Events
+  - Notifications
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://docs.sievedata.com/guide/integration/webhooks
+  baseURL: https://mango.sievedata.com/v2
+  properties:
+  - url: https://docs.sievedata.com/guide/integration/webhooks
+    type: Documentation
+  - url: openapi/sieve-openapi.yml
+    type: OpenAPI
+  - url: collections/sieve.postman_collection.json
+    type: PostmanCollection
+  - url: collections/sieve.opencollection.json
+    type: OpenCollection
+  description: Register webhook callbacks on a job (via the webhooks array on POST
+    /push) so Sieve POSTs notifications - job.start, job.complete, job.complete.no_output,
+    job.new_output - to your URL instead of polling. Retried up to ten times with
+    exponential backoff until a 200 is received.
+common:
+- type: GitHubOrganization
+  url: https://github.com/sieve-community
+- type: LinkedIn
+  url: https://www.linkedin.com/company/sievedata
+- type: Website
+  url: https://www.sievedata.com
+- type: Documentation
+  url: https://docs.sievedata.com
+- type: Plans
+  url: plans/sieve-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/sieve-rate-limits.yml
+- type: FinOps
+  url: finops/sieve-finops.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
