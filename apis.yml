@@ -110,6 +110,10 @@ apis:
     job.new_output - to your URL instead of polling. Retried up to ten times with
     exponential backoff until a 200 is received.
 common:
+- type: DomainSecurity
+  url: security/sieve-domain-security.yml
+- type: Authentication
+  url: authentication/sieve-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/sieve-community
 - type: LinkedIn
@@ -124,6 +128,8 @@ common:
   url: rate-limits/sieve-rate-limits.yml
 - type: FinOps
   url: finops/sieve-finops.yml
+- url: https://www.sieve.ai/blog
+  type: Blog
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

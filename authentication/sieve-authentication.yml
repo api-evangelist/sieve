@@ -1,0 +1,16 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/sieve-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+schemes:
+- name: ApiKeyAuth
+  type: apiKey
+  in: header
+  parameter: X-API-Key
+  description: The Sieve API key to authenticate with.
+  sources:
+  - openapi/sieve-openapi.yml
