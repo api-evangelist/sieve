@@ -110,6 +110,8 @@ apis:
     job.new_output - to your URL instead of polling. Retried up to ten times with
     exponential backoff until a 200 is received.
 common:
+- type: AgenticAccess
+  url: agentic-access/sieve-agentic-access.yml
 - type: DomainSecurity
   url: security/sieve-domain-security.yml
 - type: Authentication
