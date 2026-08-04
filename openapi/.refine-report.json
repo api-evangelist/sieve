@@ -1,0 +1,16 @@
+{
+  "provider": "sieve",
+  "sources": [
+    "sieve-functions-api-openapi.yml",
+    "sieve-jobs-api-openapi.yml"
+  ],
+  "outputs": [
+    "sieve-functions-api-openapi.yml",
+    "sieve-jobs-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
