@@ -1,0 +1,51 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Sieve Functions API",
+    "version": "v2"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-API-Key",
+      "value": "{{X-API-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Functions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Function",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://mango.sievedata.com/v2/functions/:owner_name/:function_name",
+            "params": [
+              {
+                "name": "owner_name",
+                "value": "sieve",
+                "type": "path",
+                "description": "The owner of the function."
+              },
+              {
+                "name": "function_name",
+                "value": "dubbing",
+                "type": "path",
+                "description": "The name of the function."
+              }
+            ]
+          },
+          "docs": "Get information about the given function, including its latest version."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
