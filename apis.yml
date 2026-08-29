@@ -7,6 +7,18 @@ description: Sieve is an AI media-processing platform that exposes prebuilt func
   object tracking and segmentation, background removal, and more. Functions are run
   asynchronously as jobs via a single REST push endpoint, with results retrieved by
   polling or delivered via webhooks.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: paid
   onboarding: self-serve
