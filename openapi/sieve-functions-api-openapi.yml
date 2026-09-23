@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
   title: Sieve Functions API
   description: REST API for the Sieve AI media-processing platform. Sieve exposes prebuilt public functions and apps (transcription, dubbing, lip-sync, segmentation, object tracking, background removal, and more) as well as custom user functions, all invoked asynchronously as jobs. Submit a job with the Push endpoint, then poll the Jobs endpoints for status and outputs or receive results via webhooks.

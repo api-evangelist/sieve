@@ -1,6 +1,6 @@
-openapi: 3.0.1
+openapi: 3.2.0
 info:
-  title: Sieve Functions Jobs API
+  title: Sieve Jobs API
   description: REST API for the Sieve AI media-processing platform. Sieve exposes prebuilt public functions and apps (transcription, dubbing, lip-sync, segmentation, object tracking, background removal, and more) as well as custom user functions, all invoked asynchronously as jobs. Submit a job with the Push endpoint, then poll the Jobs endpoints for status and outputs or receive results via webhooks.
   termsOfService: https://www.sievedata.com/terms
   contact:
@@ -173,6 +173,23 @@ paths:
           description: Validation error.
 components:
   schemas:
+    Webhook:
+      type: object
+      required:
+      - type
+      - url
+      properties:
+        type:
+          type: string
+          description: The webhook event type.
+          enum:
+          - job.start
+          - job.complete
+          - job.complete.no_output
+          - job.new_output
+        url:
+          type: string
+          description: The URL Sieve will POST the notification to.
     Job:
       type: object
       required:
@@ -191,8 +208,9 @@ components:
           type: string
           description: The ID of the organization that submitted the function.
         function:
-          type: object
-          nullable: true
+          type:
+          - object
+          - 'null'
           description: The function that the job belongs to.
           additionalProperties: true
         status:
@@ -205,30 +223,35 @@ components:
           - finished
           - cancelled
         created_at:
-          type: string
+          type:
+          - string
+          - 'null'
           format: date-time
-          nullable: true
           description: The UTC time the job was created.
         started_at:
-          type: string
+          type:
+          - string
+          - 'null'
           format: date-time
-          nullable: true
           description: The UTC time the job started processing.
         completed_at:
-          type: string
+          type:
+          - string
+          - 'null'
           format: date-time
-          nullable: true
           description: The UTC time the job was completed.
         error:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
           description: The error the job ran into. Empty string if there is no error.
         visibility:
           type: string
           description: '"public" or "private".'
         run_id:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
           description: The run_id of the job.
         inputs:
           type: object
@@ -240,6 +263,38 @@ components:
           items:
             type: object
             additionalProperties: true
+    PushRequest:
+      type: object
+      required:
+      - inputs
+      properties:
+        function:
+          type:
+          - string
+          - 'null'
+          description: The name of the function, in the format author/name[:version]. Either function or id may be specified, but not both.
+        id:
+          type:
+          - string
+          - 'null'
+          description: The ID of the function to be called.
+        inputs:
+          type: object
+          description: The inputs to the job. Fields vary by function.
+          additionalProperties: true
+        webhooks:
+          type:
+          - array
+          - 'null'
+          description: Webhooks to notify on job events.
+          items:
+            $ref: '#/components/schemas/Webhook'
+        env:
+          type:
+          - object
+          - 'null'
+          description: Environment variables for the given job.
+          additionalProperties: true
     PushResponse:
       type: object
       required:
@@ -276,54 +331,10 @@ components:
           type: string
           description: The ID of the model.
         workflow_id:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
           description: The ID of the workflow.
-    PushRequest:
-      type: object
-      required:
-      - inputs
-      properties:
-        function:
-          type: string
-          nullable: true
-          description: The name of the function, in the format author/name[:version]. Either function or id may be specified, but not both.
-        id:
-          type: string
-          nullable: true
-          description: The ID of the function to be called.
-        inputs:
-          type: object
-          description: The inputs to the job. Fields vary by function.
-          additionalProperties: true
-        webhooks:
-          type: array
-          nullable: true
-          description: Webhooks to notify on job events.
-          items:
-            $ref: '#/components/schemas/Webhook'
-        env:
-          type: object
-          nullable: true
-          description: Environment variables for the given job.
-          additionalProperties: true
-    Webhook:
-      type: object
-      required:
-      - type
-      - url
-      properties:
-        type:
-          type: string
-          description: The webhook event type.
-          enum:
-          - job.start
-          - job.complete
-          - job.complete.no_output
-          - job.new_output
-        url:
-          type: string
-          description: The URL Sieve will POST the notification to.
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
