@@ -246,23 +246,38 @@ components:
           items:
             type: object
             additionalProperties: true
-    Webhook:
+    PushRequest:
       type: object
       required:
-      - type
-      - url
+      - inputs
       properties:
-        type:
-          type: string
-          description: The webhook event type.
-          enum:
-          - job.start
-          - job.complete
-          - job.complete.no_output
-          - job.new_output
-        url:
-          type: string
-          description: The URL Sieve will POST the notification to.
+        function:
+          type:
+          - string
+          - 'null'
+          description: The name of the function, in the format author/name[:version]. Either function or id may be specified, but not both.
+        id:
+          type:
+          - string
+          - 'null'
+          description: The ID of the function to be called.
+        inputs:
+          type: object
+          description: The inputs to the job. Fields vary by function.
+          additionalProperties: true
+        webhooks:
+          type:
+          - array
+          - 'null'
+          description: Webhooks to notify on job events.
+          items:
+            $ref: '#/components/schemas/Webhook'
+        env:
+          type:
+          - object
+          - 'null'
+          description: Environment variables for the given job.
+          additionalProperties: true
     PushResponse:
       type: object
       required:
@@ -303,38 +318,23 @@ components:
           - string
           - 'null'
           description: The ID of the workflow.
-    PushRequest:
+    Webhook:
       type: object
       required:
-      - inputs
+      - type
+      - url
       properties:
-        function:
-          type:
-          - string
-          - 'null'
-          description: The name of the function, in the format author/name[:version]. Either function or id may be specified, but not both.
-        id:
-          type:
-          - string
-          - 'null'
-          description: The ID of the function to be called.
-        inputs:
-          type: object
-          description: The inputs to the job. Fields vary by function.
-          additionalProperties: true
-        webhooks:
-          type:
-          - array
-          - 'null'
-          description: Webhooks to notify on job events.
-          items:
-            $ref: '#/components/schemas/Webhook'
-        env:
-          type:
-          - object
-          - 'null'
-          description: Environment variables for the given job.
-          additionalProperties: true
+        type:
+          type: string
+          description: The webhook event type.
+          enum:
+          - job.start
+          - job.complete
+          - job.complete.no_output
+          - job.new_output
+        url:
+          type: string
+          description: The URL Sieve will POST the notification to.
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
